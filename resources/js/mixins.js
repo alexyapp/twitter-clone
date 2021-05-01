@@ -36,3 +36,15 @@ export const formValidationMixin = {
         },
     },
 };
+
+export const toastMixin = {
+    methods: {
+        makeToast(message, title, variant = null) {
+            this.$bvToast.toast(message, {
+                title,
+                variant,
+                solid: true
+            });
+        }
+    }
+}

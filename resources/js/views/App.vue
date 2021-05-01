@@ -1,7 +1,7 @@
 <template>
     <div>
         <navbar></navbar>
-        <div class="container">
+        <div id="main">
             <router-view></router-view>
         </div>
     </div>
@@ -18,5 +18,7 @@ export default {
 </script>
 
 <style>
-
+    #main {
+        margin-top: calc(62px + 1rem);
+    }
 </style>

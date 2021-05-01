@@ -17,11 +17,14 @@ Route::group(['namespace' => 'API', 'middleware' => 'api', 'prefix' => 'v1'], fu
     Route::group(['prefix' => 'auth'], function () {
         Route::post('login', 'AuthController@login');
         Route::post('register', 'AuthController@register');
+        Route::post('refresh', 'AuthController@refresh');
 
         Route::group(['middleware' => 'jwt.verify'], function () {
             Route::post('logout', 'AuthController@logout');
-            Route::post('refresh', 'AuthController@refresh');
+
             Route::get('me', 'AuthController@me');
         });
     });
+
+    Route::apiResource('tweets', 'TweetController');
 });

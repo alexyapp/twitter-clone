@@ -13,7 +13,8 @@
                             alt="Avatar"
                             :src="$store.state.user.avatar"
                             width="30"
-                            height="30"></b-img>
+                            height="30"
+                            class="mr-1"></b-img>
                         <em>{{ $store.state.user.name }}</em>
                     </template>
                     <b-dropdown-item @click="logout">Sign Out</b-dropdown-item>

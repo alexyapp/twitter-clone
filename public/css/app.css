@@ -10942,3 +10942,8 @@ a.text-dark:focus {
   }
 }
 
+.thumbnail {
+  width: 30px;
+  height: 30px;
+}
+

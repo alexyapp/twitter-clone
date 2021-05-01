@@ -70,4 +70,12 @@ class User extends Authenticatable implements JWTSubject
     {
         $this->attributes['password'] = bcrypt($value);
     }
+
+    /**
+     * Get the tweets of the user.
+     */
+    public function tweets()
+    {
+        return $this->hasMany(Tweet::class);
+    }
 }

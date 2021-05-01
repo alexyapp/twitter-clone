@@ -1,20 +1,10 @@
 import axios from 'axios';
+import { router } from '../router';
 import store from '../store';
-import * as authApi from '../api/auth';
 
 const instance = axios.create({
     baseURL: 'http://localhost/api/v1',
 });
-
-async function refreshAccessToken() {
-    try {
-        const response = await authApi.refresh();
-        const { data: { access_token } } = response;
-        return access_token;
-    } catch (error) {
-        
-    }
-}
 
 instance.interceptors.request.use(
     async config => {
@@ -35,22 +25,22 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
     response => response, 
     function (error) {
-        const originalRequest = error.config;
+        // const originalRequest = error.config;
         // if (error.response.status === 403 && !originalRequest._retry) {
         //     originalRequest._retry = true;
         //     // const access_token = await refreshAccessToken();            
         //     axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token;
         //     return instance(originalRequest);
         // }
-        return Promise.reject(error);
 
-        // return new Promise(async (resolve, reject) => {
-        //     if (error.status === 401 && error.config && !error.config.__isRetryRequest) {
-        //         // await refreshAccessToken();
-        //         await store.dispatch('logout');
-        //     }
-        //     throw error;
-        // });
+        if (error.response && error.response.status == 401 && error.response.data.status && error.response.data.status == 'Token is Expired') {
+            store.commit('logout');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            router.push({name: 'login'});
+        }
+
+        return Promise.reject(error);
     }
 );
 

@@ -1,10 +1,20 @@
 <template>
-  <h3>Home</h3>
+  <b-container>
+    <b-row>
+      <b-col cols="6" offset="3">
+        <tweet-list></tweet-list>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
-export default {
+import TweetList from '../components/TweetList';
 
+export default {
+  components: {
+    TweetList,
+  },
 }
 </script>
 
