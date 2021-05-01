@@ -1,6 +1,7 @@
 <template>
     <div class="mb-3 border p-3">
         <div
+            v-if="$store.state.user.id == tweetData.author.id"
             class="d-flex flex-column align-items-end">
 
             <action-buttons
