@@ -1,6 +1,7 @@
 <template>
     <div class="mb-3 border p-3">
         <div
+            v-if="isOwner"
             class="d-flex flex-column align-items-end">
 
             <action-buttons
@@ -17,7 +18,7 @@
 
             <div>
                 <p class="mb-0 ">
-                    <a @click="goToProfile" href="#">{{ tweetData.author.name }}</a>
+                    <a @click="goToProfile" href="#">{{ tweetData.author.name }} {{ isOwner ? '(You)' : '' }}</a>
                 </p>
                 <small class="text-muted">{{ tweetData.created_at }}</small>
             </div>
@@ -61,6 +62,12 @@ export default {
         toastMixin,
         errorHandlerMixin,
     ],
+
+    computed: {
+        isOwner() {
+            return this.$store.state.user.id == this.tweetData.author.id;
+        }
+    },
 
     components: {
         TweetForm,

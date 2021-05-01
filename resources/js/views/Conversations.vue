@@ -8,7 +8,8 @@
                         :key="conversation.id"
                         button
                         @click="loadMessages(conversation.id)"
-                        class="border-right-0">
+                        class="border-right-0"
+                        :active="conversationId == conversation.id">
                         <div>
                             <div>
                                 <div mb-2>
@@ -19,11 +20,11 @@
                                             rounded="circle"></b-img>
                                         <div>
                                             <p class="mb-0 font-weight-bold">{{ conversation.lastMessage.author.name }}</p>
-                                            <small class="mb-0 text-muted">{{ conversation.lastMessage.created_at }}</small>
+                                            <small class="mb-0">{{ conversation.lastMessage.created_at }}</small>
                                         </div>
                                     </div>
                                 </div>
-                                <p class="mb-0 text-muted last-message-content">{{ conversation.lastMessage.content }}</p>
+                                <p class="mb-0 last-message-content">{{ conversation.lastMessage.content }}</p>
                             </div>
                         </div>
                     </b-list-group-item>
@@ -73,6 +74,7 @@
 <script>
 import conversationsApi from '../api/conversations';
 import ReplyForm from '../components/ReplyForm';
+import { toastMixin } from '../mixins';
 
 export default {
     data() {
@@ -87,21 +89,51 @@ export default {
         ReplyForm,
     },
 
+    mixins: [
+        toastMixin,
+    ],
+
     async mounted() {
         const { data: conversations } = await conversationsApi.getAll();
         this.conversations = {...this.conversations, ...conversations};
     },
 
+    created() {
+        window.Echo.private(`users.${this.$store.state.user.id}`)
+            .notification((notification) => {
+                if (notification.type == 'App\\Notifications\\NewMessage') {
+                    const { message } = notification;
+
+                    let index = this.conversations.data.findIndex(conversation => conversation.id == message.conversation_id);
+                    this.conversations.data[index].lastMessage = {...this.conversations.data[index].lastMessage, ...message};
+                    
+                    if (this.conversationId == message.conversation_id) {
+                        this.messages.push(message);
+                    } else {
+                        this.conversations.data[index].messages.push(message);
+                    }
+
+                    this.$nextTick(() => {
+                        const { messagesWrapper } = this.$refs
+                        messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
+                        this.makeToast('You have a new message', 'New Message', 'primary');
+                    });
+                }
+            });
+    },
+
     methods: {
         loadMessages(conversationId) {
-            const { messagesWrapper } = this.$refs
-            messagesWrapper.scrollTop = messagesWrapper.scrollHeight
-
             this.conversationId = conversationId;
             let index = this.conversations.data.findIndex(conversation => conversation.id == conversationId);
 
             if (index > -1) {
                 this.messages = this.conversations.data[index].messages;
+
+                this.$nextTick(() => {
+                    const { messagesWrapper } = this.$refs
+                    messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
+                });
             }
         },
 
@@ -112,6 +144,14 @@ export default {
 
         onReplySent(message) {
             this.messages.push(message);
+
+            let index = this.conversations.data.findIndex(conversation => conversation.id == this.conversationId);
+            this.conversations.data[index].lastMessage = {...this.conversations.data[index].lastMessage, ...message};
+
+            this.$nextTick(() => {
+                const { messagesWrapper } = this.$refs
+                messagesWrapper.scrollTop = messagesWrapper.scrollHeight
+            });
         }
     }
 }

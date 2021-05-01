@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Conversation as ConversationResource;
 use App\Http\Resources\Message as MessageResource;
 use App\Models\Conversation as Conversation;
+use App\Notifications\NewMessage;
 use Illuminate\Http\Request;
 
 class ConversationController extends Controller
@@ -46,6 +47,7 @@ class ConversationController extends Controller
         $receiver = $conversation->users()->where('user_id', '!=', $sender->id)->first();
         $message = $conversation->messages()->create($data);
         $message->author()->associate($sender)->save();
+        $receiver->notify(new NewMessage($message));
 
         return new MessageResource($message);
     }

@@ -21,6 +21,7 @@ class Message extends JsonResource
             'content' => $this->content,
             'created_at' => $this->created_at->format('F d, Y g:i A'),
             'updated_at' => $this->updated_at->format('F d, Y g:i A'),
+            'conversation_id' => $this->conversation_id,
         ];
     }
 }

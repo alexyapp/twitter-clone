@@ -15,6 +15,7 @@
             autofocus
             @keyup.enter="onSubmit"
             class="border-left-0 border-right-0 rounded-0"
+            ref="textarea"
         ></b-form-textarea>
 
         <!-- <b-form-invalid-feedback :state="form.content.valid">
@@ -84,6 +85,10 @@ export default {
                 const { data: { data: message } } = await conversationsApi.reply({ content, conversationId });
                 this.$emit('reply-sent', message);
                 this.makeToast('Reply is sent', 'Success', 'success');
+                this.form.content.value = '';
+                this.form.content.valid = null;
+                this.form.content.errorMessage = '';
+                this.$nextTick(() => this.$refs.textarea.$el.focus());
             } catch (error) {
                 this.handleGeneralError(error);
             } finally {

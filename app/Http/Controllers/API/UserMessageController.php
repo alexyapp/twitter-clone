@@ -28,22 +28,15 @@ class UserMessageController extends Controller
     {
         $data = $request->only('content');
         $sender = auth()->user();
-        $conversation = Conversation::create();
+
+        if (!($conversation = $sender->hasExistingConversationWith($user))) {
+            $conversation = Conversation::create();
+        }
+
         $message = $conversation->messages()->create($data);
         $message->author()->associate($sender)->save();
         $user->conversations()->attach($conversation);
         $sender->conversations()->attach($conversation);
-        // // convo exists
-        // if ($user->conversations->contains(auth()->id())) {
-        //     dd('foo');
-        // } else {
-        //     $sender = auth()->user();
-        //     $conversation = Conversation::create();
-        //     $message = $conversation->messages()->create($data);
-        //     $message->author()->associate($sender)->save();
-        //     $user->conversations()->attach($conversation);
-        //     $sender->conversations()->attach($conversation);
-        // }
 
         return new MessageResource($message);
     }
