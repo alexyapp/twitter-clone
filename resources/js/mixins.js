@@ -48,3 +48,13 @@ export const toastMixin = {
         }
     }
 }
+
+export const errorHandlerMixin = {
+    methods: {
+        handleGeneralError(error) {
+            if (error.response && error.response.data && error.response.data.message) {
+                this.makeToast(error.response.data.message, 'Error', 'danger');
+            }
+        }
+    }
+}

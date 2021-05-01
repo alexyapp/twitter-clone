@@ -17,6 +17,7 @@
                             class="mr-1"></b-img>
                         <em>{{ $store.state.user.name }}</em>
                     </template>
+                    <b-dropdown-item :to="{name: 'conversations'}">Messages</b-dropdown-item>
                     <b-dropdown-item @click="logout">Sign Out</b-dropdown-item>
                 </b-nav-item-dropdown>
 

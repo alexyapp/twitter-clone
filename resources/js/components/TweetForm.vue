@@ -35,7 +35,7 @@
 
 <script>
 import tweetsApi from '../api/tweets';
-import { formValidationMixin, toastMixin } from '../mixins';
+import { formValidationMixin, toastMixin, errorHandlerMixin } from '../mixins';
 
 export default {
     data() {
@@ -65,6 +65,7 @@ export default {
     mixins: [
         formValidationMixin,
         toastMixin,
+        errorHandlerMixin,
     ],
 
     mounted() {
@@ -105,9 +106,7 @@ export default {
                     this.$emit('tweet-created', tweet);
                 }
             } catch (error) {
-                if (error.response && error.response.data && error.response.data.message) {
-                    this.makeToast(error.response.data.message, 'Error', 'danger');
-                }
+                this.handleGeneralError(error);
             } finally {
                 this.loading = false;
             }

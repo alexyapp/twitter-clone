@@ -16,7 +16,9 @@
             </div>
 
             <div>
-                <p class="mb-0 ">{{ tweetData.author.name }}</p>
+                <p class="mb-0 ">
+                    <a @click="goToProfile" href="#">{{ tweetData.author.name }}</a>
+                </p>
                 <small class="text-muted">{{ tweetData.created_at }}</small>
             </div>
         </div>
@@ -39,7 +41,7 @@
 import ActionButtons from './ActionButtons';
 import TweetForm from './TweetForm';
 import tweetsApi from '../api/tweets';
-import { toastMixin } from '../mixins';
+import { toastMixin, errorHandlerMixin } from '../mixins';
 
 export default {
     data() {
@@ -57,6 +59,7 @@ export default {
 
     mixins: [
         toastMixin,
+        errorHandlerMixin,
     ],
 
     components: {
@@ -91,9 +94,7 @@ export default {
                                 this.$emit('tweet-deleted', tweet);
                             })
                             .catch(error => {
-                                if (error.response && error.response.data && error.response.data.message) {
-                                    this.makeToast(error.response.data.message, 'Error', 'danger');
-                                }
+                                this.handleGeneralError(error);
                             });
                     }
                 })
@@ -105,6 +106,11 @@ export default {
         onTweetUpdated(tweet) {
             this.editing = false;
             this.$emit('tweet-updated', tweet);
+        },
+
+        goToProfile(e) {
+            e.preventDefault();
+            this.$router.push({ name: 'profile', params: { userId: this.tweetData.author.id } });
         }
     }
 }
