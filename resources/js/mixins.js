@@ -15,7 +15,7 @@ export const formValidationMixin = {
             return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value);
         },
 
-        isEqual(value, valueToCheck) {
+        isSame(value, valueToCheck) {
             return value == valueToCheck;
         },
 

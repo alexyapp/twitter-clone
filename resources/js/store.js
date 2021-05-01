@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import * as authApi from './api/auth';
+import axios from './axios'
 
 Vue.use(Vuex);
 
@@ -36,9 +37,8 @@ export default new Vuex.Store({
                     const { data: { access_token } } = await authApi.login(credentials);
                     localStorage.setItem('token', access_token);
 
-                    const { data: user } = await authApi.fetchUser();
+                    const { data: { data: user } } = await authApi.fetchUser();
                     localStorage.setItem('user', JSON.stringify(user));
-
                     commit('auth_success', { access_token, user });
                     resolve();
                 } catch (error) {
@@ -50,13 +50,16 @@ export default new Vuex.Store({
             });
         },
 
-        register({commit}, data){
+        register({ commit }, formData) {
             return new Promise(async (resolve, reject) => {
                 commit('auth_request');
                 try {
-                    const { data: { access_token } } = await authApi.register(data);
+                    const { data: { access_token } } = await authApi.register(formData);
                     localStorage.setItem('token', access_token);
-                    const { data: user } = await authApi.fetchUser();
+                    
+                    const { data: { data: user } } = await authApi.fetchUser();
+                    localStorage.setItem('user', JSON.stringify(user));
+
                     commit('auth_success', { access_token, user });
                     resolve();
                 } catch (error) {
@@ -77,6 +80,7 @@ export default new Vuex.Store({
                     localStorage.removeItem('user');
                     resolve();
                 } catch (error) {
+                    reject(error);
                 }
             });
         }

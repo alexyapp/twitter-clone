@@ -57,7 +57,6 @@
 </template>
 
 <script>
-import axios from '../axios';
 import { formValidationMixin } from '../mixins';
 
 export default {
@@ -112,11 +111,9 @@ export default {
             e.preventDefault();
             this.loading = true;
             const { email: { value: email }, password: { value: password } } = this.form;
+
             try {
-                await this.$store.dispatch('login', {
-                    email,
-                    password
-                });
+                await this.$store.dispatch('login', { email, password });
 
                 this.$router.push({ name: 'home' });
             } catch (error) {

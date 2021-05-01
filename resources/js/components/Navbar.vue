@@ -8,9 +8,14 @@
             <b-navbar-nav class="ml-auto">
                 <b-nav-item-dropdown v-if="!!$store.getters.isLoggedIn">
                     <template #button-content>
+                        <b-img 
+                            rounded="circle" 
+                            alt="Avatar"
+                            :src="$store.state.user.avatar"
+                            width="30"
+                            height="30"></b-img>
                         <em>{{ $store.state.user.name }}</em>
                     </template>
-                    <b-dropdown-item href="#">Profile</b-dropdown-item>
                     <b-dropdown-item @click="logout">Sign Out</b-dropdown-item>
                 </b-nav-item-dropdown>
 

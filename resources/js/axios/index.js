@@ -35,13 +35,22 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
     response => response, 
     function (error) {
-        return new Promise(async (resolve, reject) => {
-            if (error.status === 401 && error.config && !error.config.__isRetryRequest) {
-                // await refreshAccessToken();
-                await store.dispatch('logout');
-            }
-            throw error;
-        });
+        const originalRequest = error.config;
+        // if (error.response.status === 403 && !originalRequest._retry) {
+        //     originalRequest._retry = true;
+        //     // const access_token = await refreshAccessToken();            
+        //     axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token;
+        //     return instance(originalRequest);
+        // }
+        return Promise.reject(error);
+
+        // return new Promise(async (resolve, reject) => {
+        //     if (error.status === 401 && error.config && !error.config.__isRetryRequest) {
+        //         // await refreshAccessToken();
+        //         await store.dispatch('logout');
+        //     }
+        //     throw error;
+        // });
     }
 );
 

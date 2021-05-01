@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Resources\User as UserResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -35,6 +36,9 @@ class AuthController extends Controller
     {
         $data = $request->only(['name', 'email', 'password']);
         $user = User::create($data);
+        if ($file = $request->file('avatar')) {
+            $user->saveAvatar($file);
+        }
         $token = auth()->attempt($data);
 
         return $this->respondWithToken($token);
@@ -47,7 +51,7 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(auth()->user());
+        return new UserResource(auth()->user());
     }
 
     /**
