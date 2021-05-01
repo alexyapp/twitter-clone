@@ -3,6 +3,8 @@ import VueRouter from 'vue-router';
 import Home from './views/Home';
 import Login from './views/Login';
 import Register from './views/Register';
+import Profile from './views/Profile';
+import Conversations from './views/Conversations';
 import store from './store';
 
 Vue.use(VueRouter);
@@ -31,7 +33,23 @@ const routes = [
         meta: {
             guest: true,
         },
-    }
+    },
+    {
+        path: '/messages',
+        name: 'conversations',
+        component: Conversations,
+        meta: {
+            requiresAuth: true,
+        }
+    },
+    {
+        path: '/profile/:userId',
+        name: 'profile',
+        component: Profile,
+        meta: {
+            requiresAuth: true,
+        },
+    },
 ];
 
 export const router = new VueRouter({

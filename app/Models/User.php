@@ -78,4 +78,31 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Tweet::class);
     }
+
+    /**
+     * Get the conversations of the user.
+     */
+    public function conversations()
+    {
+        return $this->belongsToMany(Conversation::class);
+    }
+
+    public function receivesBroadcastNotificationsOn()
+    {
+        return 'users.'.$this->id;
+    }
+
+    /**
+     * Check if user has existing conversation with this user.
+     *
+     * @params \App\Models\User $user
+     *
+     * @return \App\Models\Conversation
+     */
+    public function hasExistingConversationWith(User $user)
+    {
+        $matches = array_intersect($this->conversations->pluck('id')->toArray(), $user->conversations->pluck('id')->toArray());
+
+        return Conversation::findOrFail($matches[0]);
+    }
 }

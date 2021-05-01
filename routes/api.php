@@ -27,4 +27,10 @@ Route::group(['namespace' => 'API', 'middleware' => 'api', 'prefix' => 'v1'], fu
     });
 
     Route::apiResource('tweets', 'TweetController');
+    Route::apiResource('users', 'UserController');
+
+    Route::post('users/{user}/messages', 'UserMessageController@store');
+
+    Route::resource('conversations', 'ConversationController', ['except' => ['create', 'edit', 'store', 'update']]);
+    Route::post('conversations/{conversation}', 'ConversationController@store')->name('conversations.store');
 });
