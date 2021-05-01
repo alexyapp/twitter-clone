@@ -1,4 +1,4 @@
-## Frontend Setup
+## Vue Setup
 - Run `npm run install & npm run dev`
 
 ## Docker Setup
@@ -11,4 +11,4 @@
 
 ## Laravel Setup
 - Run `cd laradock && docker-compose exec workspace bash`
-- Run `cp .env.example .env && php artisan key:generate && php artisan migrate`
+- Run `cp .env.example .env && php artisan key:generate && php artisan jwt:secret && php artisan migrate`
