@@ -22,6 +22,7 @@ class Tweet extends JsonResource
             'author' => new User($this->author),
             'created_at' => Carbon::parse($this->created_at)->format('F d, Y g:i A'),
             'updated_at' => Carbon::parse($this->updated_at)->format('F d, Y g:i A'),
+            'comments' => Comment::collection($this->comments),
         ];
     }
 }

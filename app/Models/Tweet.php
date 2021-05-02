@@ -22,4 +22,21 @@ class Tweet extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    /**
+     * Get all of the tweet's comments.
+     */
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable')
+                    ->whereNull('parent_id');
+    }
+
+    /**
+     * Get all of the tweet's comments.
+     */
+    public function replies()
+    {
+        return $this->hasMany(Comment::class, 'parent_id');
+    }
 }

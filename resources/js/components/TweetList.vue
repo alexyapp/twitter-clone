@@ -8,7 +8,9 @@
             :key="tweet.id"
             :tweet-data="tweet"
             @tweet-updated="onTweetUpdated"
-            @tweet-deleted="onTweetDeleted">
+            @tweet-deleted="onTweetDeleted"
+            @comment-created="onCommentCreated"
+            @reply-created="onReplyCreated">
         </tweet>
 
         <div v-if="showShouldLoadMoreButton" class="text-center mb-3">
@@ -74,6 +76,28 @@ export default {
             let index = this.tweets.data.findIndex(t => t.id == tweet.id);
             this.tweets.data = [...this.tweets.data.slice(0, index), ...this.tweets.data.slice(index + 1)];
             this.makeToast('Tweet has been deleted', 'Success', 'success');
+        },
+
+        onCommentCreated({ comment, tweetId }) {
+            let index = this.tweets.data.findIndex(tweet => tweet.id == tweetId);
+
+            if (index > -1) {
+                this.tweets.data[index].comments.push(comment);
+            }
+        },
+
+        onReplyCreated({ reply, tweetId, parentCommentId }) {
+            let index = this.tweets.data.findIndex(tweet => tweet.id == tweetId);
+
+            if (index > -1) {
+                let i = this.tweets.data[index].comments.findIndex(comment => comment.id == parentCommentId);
+                
+                if (i > -1) {
+                    this.tweets.data[index].comments[i].replies.push(reply);
+                    console.log('test', this.tweets.data[index].comments[i].replies);
+
+                }
+            }
         },
 
         async loadMoreTweets() {

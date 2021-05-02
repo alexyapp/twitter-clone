@@ -8,6 +8,7 @@
                 @edit-button-clicked="editTweet"
                 @delete-button-clicked="deleteTweet"></action-buttons>
         </div>
+
         <div class="d-flex align-items-center">
             <div class="mr-2">
                 <b-img 
@@ -24,7 +25,7 @@
             </div>
         </div>
 
-        <div class="tweet-content mt-3">
+        <div class="tweet-content mt-2">
             <div v-if="editing">
                 <tweet-form 
                     :tweet-data="tweetData"
@@ -34,6 +35,104 @@
             <div v-else>
                 <h5>{{ tweetData.content }}</h5>
             </div>
+
+            <div>
+                <div class="mb-2">
+                    <a @click="displayCommentForm" href="#">
+                        <small>Comment</small>
+                    </a>
+                </div>
+
+                <div
+                    class="mb-4"
+                    v-show="showCommentForm">
+                    <comment-form
+                        @comment-created="onCommentCreated"
+                        :tweet-id="tweetData.id">
+                    </comment-form>
+                </div>
+
+                <!-- Comments -->
+                <div class="mt-4">
+                    <div 
+                        v-for="comment in tweetData.comments"
+                        :key="comment.id"
+                        class="border p-3 mb-4">
+                        <div>
+                            <div class="d-flex align-items-center">
+                                <div class="mr-2">
+                                    <b-img 
+                                        :src="comment.author.avatar" 
+                                        rounded="circle"
+                                        class="thumbnail"></b-img>
+                                </div>
+
+                                <div>
+                                    <p class="mb-0 ">
+                                        <a @click="goToProfile" href="#">{{ comment.author.name }} {{ isOwner ? '(You)' : '' }}</a>
+                                    </p>
+                                    <small class="text-muted">{{ comment.created_at }}</small>
+                                </div>
+                            </div>
+
+                            <div class="comment-content mt-2">
+                                <div>
+                                    <h5>{{ comment.content }}</h5>
+                                </div>
+
+                                <div class="mb-2">
+                                    <a @click="displayReplyForm" href="#">
+                                        <small>Reply</small>
+                                    </a>
+                                </div>
+
+                                <div
+                                    class="mb-4"
+                                    v-show="showReplyForm">
+                                    <comment-form
+                                        @comment-created="onCommentCreated"
+                                        @reply-created="reply => onReplyCreated(reply, comment.id)"
+                                        :tweet-id="tweetData.id"
+                                        :comment-id="comment.id">
+                                    </comment-form>
+                                </div>
+
+                                <!-- Replies -->
+                                <div class="mt-4">
+                                    <div 
+                                        v-for="reply in comment.replies"
+                                        :key="reply.id"
+                                        class="mb-4 border p-3">
+                                        <div>
+                                            <div class="d-flex align-items-center">
+                                                <div class="mr-2">
+                                                    <b-img 
+                                                        :src="reply.author.avatar" 
+                                                        rounded="circle"
+                                                        class="thumbnail"></b-img>
+                                                </div>
+
+                                                <div>
+                                                    <p class="mb-0 ">
+                                                        <a @click="goToProfile" href="#">{{ reply.author.name }} {{ isOwner ? '(You)' : '' }}</a>
+                                                    </p>
+                                                    <small class="text-muted">{{ reply.created_at }}</small>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="reply-content mt-2">
+                                            <div>
+                                                <h5>{{ reply.content }}</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -41,6 +140,7 @@
 <script>
 import ActionButtons from './ActionButtons';
 import TweetForm from './TweetForm';
+import CommentForm from './CommentForm';
 import tweetsApi from '../api/tweets';
 import { toastMixin, errorHandlerMixin } from '../mixins';
 
@@ -48,6 +148,8 @@ export default {
     data() {
         return {
             editing: false,
+            showCommentForm: false,
+            showReplyForm: false,
         }
     },
 
@@ -72,6 +174,7 @@ export default {
     components: {
         TweetForm,
         ActionButtons,
+        CommentForm,
     },
 
     methods: {
@@ -106,7 +209,7 @@ export default {
                     }
                 })
                 .catch(error => {
-                    // TODO: handle error
+                    this.handleGeneralError(error);
                 });
         },
 
@@ -118,13 +221,31 @@ export default {
         goToProfile(e) {
             e.preventDefault();
             this.$router.push({ name: 'profile', params: { userId: this.tweetData.author.id } });
+        },
+
+        onCommentCreated(comment) {
+            this.$emit('comment-created', { comment, tweetId: this.tweetData.id });
+        },
+
+        onReplyCreated(reply, parentCommentId) {
+            this.$emit('reply-created', { reply, tweetId: this.tweetData.id, parentCommentId });
+        },
+
+        displayCommentForm(e) {
+            e.preventDefault();
+            this.showCommentForm = true;
+        },
+
+        displayReplyForm(e) {
+            e.preventDefault();
+            this.showReplyForm = true;
         }
     }
 }
 </script>
 
 <style>
-    .tweet-content {
+    .tweet-content, .comment-content, .reply-content {
         margin-left: calc(30px + 0.5rem);
     }
 </style>
