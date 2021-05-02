@@ -5,7 +5,9 @@
         <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
         <b-collapse id="nav-collapse" is-nav>
-            <b-navbar-nav class="ml-auto">
+            <b-navbar-nav class="ml-auto align-items-center">
+                <search-bar></search-bar>
+
                 <b-nav-item-dropdown v-if="!!$store.getters.isLoggedIn">
                     <template #button-content>
                         <b-img 
@@ -31,7 +33,13 @@
 </template>
 
 <script>
+import SearchBar from './SearchBar';
+
 export default {
+    components: {
+        SearchBar,
+    },
+
     methods: {
         async logout() {
             await this.$store.dispatch('logout');

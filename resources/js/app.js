@@ -10,6 +10,8 @@ import store from './store';
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 
+export const bus = new Vue();
+
 const app = new Vue({
     el: '#app',
     components: {

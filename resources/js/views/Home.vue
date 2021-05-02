@@ -1,7 +1,7 @@
 <template>
   <b-container>
     <b-row>
-      <b-col cols="6" offset="3">
+      <b-col lg="6" offset-lg="3" fluid="md">
         <tweet-list></tweet-list>
       </b-col>
     </b-row>

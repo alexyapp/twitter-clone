@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Searchable\Searchable;
+use Spatie\Searchable\SearchResult;
 
-class Tweet extends Model
+class Tweet extends Model implements Searchable
 {
     /**
      * The attributes that are mass assignable.
@@ -32,11 +34,11 @@ class Tweet extends Model
                     ->whereNull('parent_id');
     }
 
-    /**
-     * Get all of the tweet's comments.
-     */
-    public function replies()
+    public function getSearchResult(): SearchResult
     {
-        return $this->hasMany(Comment::class, 'parent_id');
+        return new SearchResult(
+            $this,
+            $this->id,
+         );
     }
 }

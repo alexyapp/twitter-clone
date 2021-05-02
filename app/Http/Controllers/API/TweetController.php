@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Tweet as TweetResource;
 use App\Models\Tweet;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Spatie\Searchable\Search;
 
 class TweetController extends Controller
 {
@@ -25,7 +27,23 @@ class TweetController extends Controller
      */
     public function index()
     {
-        $tweets = Tweet::latest()->paginate();
+        if ($q = request()->input('q')) {
+            $searchResults = (new Search())
+                                ->registerModel(Tweet::class, 'content')
+                                ->search($q);
+
+            $tweets = new Collection();
+
+            foreach ($searchResults->groupByType() as $type => $modelSearchResults) {
+                if ($type == 'tweets') {
+                    foreach ($modelSearchResults as $searchResult) {
+                        $tweets->push($searchResult->searchable);
+                    }
+                }
+            }
+        } else {
+            $tweets = Tweet::latest()->paginate()->load(['comments', 'comments.replies']);
+        }
 
         return TweetResource::collection($tweets);
     }

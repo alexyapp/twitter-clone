@@ -25,6 +25,7 @@ import TweetForm from './TweetForm';
 import tweetsApi from '../api/tweets';
 import { toastMixin } from '../mixins';
 import axios from '../axios';
+import { bus } from '../app';
 
 export default {
     data() {
@@ -50,6 +51,15 @@ export default {
 
             return false;
         }
+    },
+
+    created() {
+        bus.$on('searchResults', (searchResults) => {
+            const { data: { data: tweets } } = searchResults;
+            this.tweets.data = tweets;
+            this.tweets.links = null;
+            this.tweets.meta = null;
+        });
     },
 
     async mounted() {
